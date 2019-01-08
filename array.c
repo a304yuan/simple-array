@@ -127,7 +127,7 @@ bool array_iter_has(const array_iter * iter) {
     return iter->bck && iter->idx_in_bck < iter->bck->size;
 }
 
-void array_iter_next(array_iter * iter, void * dest) {
+size_t array_iter_next(array_iter * iter, void * dest) {
     memcpy(dest, iter->next_ref, iter->elem_size);
     if (++iter->idx_in_bck == iter->bck->size) {
         iter->bck = iter->bck->next;
@@ -137,11 +137,11 @@ void array_iter_next(array_iter * iter, void * dest) {
     else {
         iter->next_ref += iter->elem_size;
     }
-    iter->idx += 1;
+    return iter->idx++;
 }
 
-void * array_iter_next_ref(array_iter * iter) {
-    void * dest = iter->next_ref;
+size_t array_iter_next_ref(array_iter * iter, void ** dest) {
+    *dest = iter->next_ref;
     if (++iter->idx_in_bck == iter->bck->size) {
         iter->bck = iter->bck->next;
         if (iter->bck) {
@@ -152,6 +152,5 @@ void * array_iter_next_ref(array_iter * iter) {
     else {
         iter->next_ref += iter->elem_size;
     }
-    iter->idx += 1;
-    return dest;
+    return iter->idx++;
 }

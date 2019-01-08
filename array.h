@@ -41,7 +41,7 @@ extern void array_delete(array * arr, size_t idx, void * dest);
 
 extern void array_iter_init(const array * arr, array_iter * iter);
 extern bool array_iter_has(const array_iter * iter);
-extern void array_iter_next(array_iter * iter, void * dest);
-extern void * array_iter_next_ref(array_iter * iter);
+extern size_t array_iter_next(array_iter * iter, void * dest);
+extern size_t array_iter_next_ref(array_iter * iter, void ** dest);
 
 #endif /* end of include guard: SIMPLE-ARRAY */
