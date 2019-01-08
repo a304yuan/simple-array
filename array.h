@@ -7,7 +7,7 @@
 
 typedef struct bucket bucket;
 typedef struct array array;
-typedef struct array_iterator array_iterator;
+typedef struct array_iter array_iter;
 
 struct bucket {
     size_t size;
@@ -22,7 +22,7 @@ struct array {
     bucket * bucket_list;
 };
 
-struct array_iterator {
+struct array_iter {
     bucket * bck;
     void * next_ref;
     size_t elem_size;
@@ -39,9 +39,9 @@ extern void * array_get_ref(const array * arr, size_t idx);
 extern void array_set(array * arr, size_t idx, const void * src);
 extern void array_delete(array * arr, size_t idx, void * dest);
 
-extern void array_iterator_init(const array * arr, array_iterator * iter);
-extern bool array_iterator_has(const array_iterator * iter);
-extern void array_iterator_next(array_iterator * iter, void * dest);
-extern void * array_iterator_next_ref(array_iterator * iter);
+extern void array_iter_init(const array * arr, array_iter * iter);
+extern bool array_iter_has(const array_iter * iter);
+extern void array_iter_next(array_iter * iter, void * dest);
+extern void * array_iter_next_ref(array_iter * iter);
 
 #endif /* end of include guard: SIMPLE-ARRAY */

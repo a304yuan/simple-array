@@ -115,7 +115,7 @@ void array_delete(array * arr, size_t idx, void * dest) {
     arr->size -= 1;
 }
 
-void array_iterator_init(const array * arr, array_iterator * iter) {
+void array_iter_init(const array * arr, array_iter * iter) {
     iter->bck = arr->bucket_list;
     iter->elem_size = arr->elem_size;
     iter->next_ref = arr->bucket_list->data;
@@ -123,11 +123,11 @@ void array_iterator_init(const array * arr, array_iterator * iter) {
     iter->idx_in_bck = 0;
 }
 
-bool array_iterator_has(const array_iterator * iter) {
+bool array_iter_has(const array_iter * iter) {
     return iter->bck && iter->idx_in_bck < iter->bck->size;
 }
 
-void array_iterator_next(array_iterator * iter, void * dest) {
+void array_iter_next(array_iter * iter, void * dest) {
     memcpy(dest, iter->next_ref, iter->elem_size);
     if (++iter->idx_in_bck == iter->bck->size) {
         iter->bck = iter->bck->next;
@@ -140,7 +140,7 @@ void array_iterator_next(array_iterator * iter, void * dest) {
     iter->idx += 1;
 }
 
-void * array_iterator_next_ref(array_iterator * iter) {
+void * array_iter_next_ref(array_iter * iter) {
     void * dest = iter->next_ref;
     if (++iter->idx_in_bck == iter->bck->size) {
         iter->bck = iter->bck->next;
