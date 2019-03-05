@@ -20,6 +20,8 @@ static struct _elem_position array_find(const array * arr, size_t idx) {
         if (cur->size == 0 && prev) {
             prev->next = cur->next;
             free(cur);
+            cur = prev->next;
+            continue;
         }
         idx -= cur->size;
         prev = cur;
