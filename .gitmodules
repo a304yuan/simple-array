@@ -1,0 +1,3 @@
+[submodule "simple-any"]
+	path = simple-any
+	url = https://github.com/a304yuan/simple-any
