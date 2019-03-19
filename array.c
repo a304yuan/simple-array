@@ -1,7 +1,7 @@
 #include "array.h"
 
 struct _elem_position {
-    bucket * bck;
+    bucket ** bck;
     size_t idx;
 };
 
@@ -13,19 +13,10 @@ static bucket * array_bucket_new(size_t capacity) {
 }
 
 static struct _elem_position array_find(const array * arr, size_t idx) {
-    bucket * cur = arr->bucket_list;
-    bucket * prev = NULL;
-    while (idx >= cur->size) {
-        // clean empty bucket
-        if (cur->size == 0 && prev) {
-            prev->next = cur->next;
-            free(cur);
-            cur = prev->next;
-            continue;
-        }
-        idx -= cur->size;
-        prev = cur;
-        cur = cur->next;
+    bucket ** cur = (bucket**)&arr->bucket_list;
+    while (idx >= (*cur)->size) {
+        idx -= (*cur)->size;
+        cur = &(*cur)->next;
     }
     return (struct _elem_position){.bck = cur, .idx = idx};
 }
@@ -67,7 +58,7 @@ void array_insert(array * arr, size_t idx, any val) {
     if (idx >= arr->size) return;
 
     struct _elem_position pos = array_find(arr, idx);
-    bucket * bck = pos.bck;
+    bucket * bck = *pos.bck;
     if (bck->size == arr->bucket_capacity) {
         bucket * new_bck = array_bucket_new(arr->bucket_capacity);
         memcpy(new_bck->data, bck->data + pos.idx, (bck->size - pos.idx) * sizeof(any));
@@ -75,6 +66,11 @@ void array_insert(array * arr, size_t idx, any val) {
         new_bck->size = bck->size - pos.idx;
         bck->next = new_bck;
         bck->size = pos.idx;
+    }
+    else {
+        for (size_t i = bck->size - 1; i >= pos.idx; i--) {
+            bck->data[i+1] = bck->data[i];
+        }
     }
     bck->data[pos.idx] = val;
     bck->size += 1;
@@ -85,31 +81,40 @@ any array_get(const array * arr, size_t idx) {
     if (idx >= arr->size) return (any){0};
 
     struct _elem_position pos = array_find(arr, idx);
-    return pos.bck->data[pos.idx];
+    return (*pos.bck)->data[pos.idx];
 }
 
 any * array_get_ref(const array * arr, size_t idx) {
     if (idx >= arr->size) return NULL;
 
     struct _elem_position pos = array_find(arr, idx);
-    return pos.bck->data + pos.idx;
+    return (*pos.bck)->data + pos.idx;
 }
 
 void array_set(array * arr, size_t idx, any val) {
     if (idx >= arr->size) return;
 
     struct _elem_position pos = array_find(arr, idx);
-    pos.bck->data[pos.idx] = val;
+    (*pos.bck)->data[pos.idx] = val;
 }
 
 void array_delete(array * arr, size_t idx) {
     if (idx >= arr->size) return;
 
     struct _elem_position pos = array_find(arr, idx);
-    bucket * bck = pos.bck;
-    memmove(bck->data + pos.idx, bck->data + pos.idx + 1, (bck->size - pos.idx - 1) * sizeof(any));
+    bucket * bck = *pos.bck;
+    //memmove(bck->data + pos.idx, bck->data + pos.idx + 1, (bck->size - pos.idx - 1) * sizeof(any));
+    for (size_t i = pos.idx; i + 1 < bck->size; i++) {
+        bck->data[i] = bck->data[i+1];
+    }
     bck->size -= 1;
     arr->size -= 1;
+
+    // clean empty bucket
+    if (bck->size == 0) {
+        *pos.bck = bck->next;
+        free(bck);
+    }
 }
 
 void array_iter_init(const array * arr, array_iter * iter) {
