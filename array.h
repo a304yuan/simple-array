@@ -24,9 +24,7 @@ struct array {
 
 struct array_iter {
     bucket * bck;
-    any * next_ref;
     size_t idx;
-    size_t idx_in_bck;
 };
 
 extern array * array_new(size_t bucket_capacity);

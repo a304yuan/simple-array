@@ -119,26 +119,21 @@ void array_delete(array * arr, size_t idx) {
 
 void array_iter_init(const array * arr, array_iter * iter) {
     iter->bck = arr->bucket_list;
-    iter->next_ref = arr->bucket_list->data;
     iter->idx = 0;
-    iter->idx_in_bck = 0;
 }
 
 bool array_iter_has(const array_iter * iter) {
-    return iter->bck && iter->idx_in_bck < iter->bck->size;
+    return iter->bck && iter->idx < iter->bck->size;
 }
 
 any * array_iter_next_ref(array_iter * iter) {
-    any * e = iter->next_ref;
-    if (++iter->idx_in_bck == iter->bck->size) {
+    any * e = iter->bck->data + iter->idx;
+    if (iter->idx == iter->bck->size - 1) {
         iter->bck = iter->bck->next;
-        if (iter->bck) {
-            iter->next_ref = iter->bck->data;
-        }
-        iter->idx_in_bck = 0;
+        iter->idx = 0;
     }
     else {
-        iter->next_ref += 1;
+        iter->idx++;
     }
     return e;
 }
